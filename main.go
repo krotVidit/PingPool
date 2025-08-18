@@ -5,13 +5,15 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"ping/app/workerpool"
 )
 
 func main() {
 	const workerCount = 3
 	wg := sync.WaitGroup{}
 
-	client := &http.Client{Timeout: time.Second * 5}
+	client := &http.Client{Timeout: time.Second * 10}
 	in := make(chan string)
 	out := make(chan string)
 
@@ -30,7 +32,7 @@ func main() {
 	}()
 
 	for i := 0; i < workerCount; i++ {
-		go worker(in, out, &wg, client)
+		go workerpool.Worker(in, out, &wg, client)
 		wg.Add(1)
 	}
 
@@ -43,18 +45,3 @@ func main() {
 		fmt.Println(result)
 	}
 }
-
-func worker(in <-chan string, out chan<- string, wg *sync.WaitGroup, client *http.Client) {
-	defer wg.Done()
-
-	for url := range in {
-		resp, err := client.Get(url)
-		if err != nil {
-			out <- fmt.Sprintf("Error: %s  url: %s", err, url)
-			continue
-		}
-		out <- fmt.Sprintf("OK %s status: %s", url, resp.Status)
-		resp.Body.Close()
-	}
-}
-
