@@ -24,17 +24,8 @@ func main() {
 		"https://netology.ru",
 	}
 
-	go func() {
-		for _, url := range urls {
-			in <- url
-		}
-		close(in)
-	}()
-
-	for i := 0; i < workerCount; i++ {
-		go workerpool.Worker(in, out, &wg, client)
-		wg.Add(1)
-	}
+	go workerpool.FeedUrls(urls, in)
+	go workerpool.StartWorkers(workerCount, &wg, in, out, client)
 
 	go func() {
 		wg.Wait()

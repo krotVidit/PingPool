@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-func Worker(in <-chan string, out chan<- string, wg *sync.WaitGroup, client *http.Client) {
+func worker(in <-chan string, out chan<- string, wg *sync.WaitGroup, client *http.Client) {
 	defer wg.Done()
 
 	for url := range in {
@@ -18,5 +18,21 @@ func Worker(in <-chan string, out chan<- string, wg *sync.WaitGroup, client *htt
 		}
 		out <- fmt.Sprintf("OK %s status: %s", url, resp.Status)
 		resp.Body.Close()
+	}
+}
+
+func FeedUrls(urls []string, in chan<- string) {
+	go func() {
+		for _, url := range urls {
+			in <- url
+		}
+		close(in)
+	}()
+}
+
+func StartWorkers(workerCount int, wg *sync.WaitGroup, in <-chan string, out chan<- string, client *http.Client) {
+	for i := 0; i < workerCount; i++ {
+		go worker(in, out, wg, client)
+		wg.Add(1)
 	}
 }
