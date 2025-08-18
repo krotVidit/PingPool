@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 )
 
 func main() {
 	const workerCount = 3
+	client := &http.Client{Timeout: time.Second * 5}
 	wg := sync.WaitGroup{}
 	in := make(chan string)
 	out := make(chan string)
@@ -28,7 +30,7 @@ func main() {
 
 	for i := 0; i < workerCount; i++ {
 		wg.Add(1)
-		go worker(in, out, &wg)
+		go worker(in, out, &wg, client)
 	}
 
 	go func() {
@@ -41,10 +43,10 @@ func main() {
 	}
 }
 
-func worker(in <-chan string, out chan<- string, wg *sync.WaitGroup) {
+func worker(in <-chan string, out chan<- string, wg *sync.WaitGroup, client *http.Client) {
 	defer wg.Done()
 	for url := range in {
-		resp, err := http.DefaultClient.Get(url)
+		resp, err := client.Get(url)
 		if err != nil {
 			out <- fmt.Sprintf("Error: %s  url: %s", err, url)
 			continue
