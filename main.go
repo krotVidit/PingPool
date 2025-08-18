@@ -9,8 +9,9 @@ import (
 
 func main() {
 	const workerCount = 3
-	client := &http.Client{Timeout: time.Second * 5}
 	wg := sync.WaitGroup{}
+
+	client := &http.Client{Timeout: time.Second * 5}
 	in := make(chan string)
 	out := make(chan string)
 
@@ -29,8 +30,8 @@ func main() {
 	}()
 
 	for i := 0; i < workerCount; i++ {
-		wg.Add(1)
 		go worker(in, out, &wg, client)
+		wg.Add(1)
 	}
 
 	go func() {
@@ -38,13 +39,14 @@ func main() {
 		close(out)
 	}()
 
-	for resutl := range out {
-		fmt.Println(resutl)
+	for result := range out {
+		fmt.Println(result)
 	}
 }
 
 func worker(in <-chan string, out chan<- string, wg *sync.WaitGroup, client *http.Client) {
 	defer wg.Done()
+
 	for url := range in {
 		resp, err := client.Get(url)
 		if err != nil {
