@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"sync"
 	"time"
 
 	"ping/app/workerpool"
@@ -11,11 +10,8 @@ import (
 
 func main() {
 	const workerCount = 3
-	wg := sync.WaitGroup{}
-
 	client := &http.Client{Timeout: time.Second * 10}
-	in := make(chan string)
-	out := make(chan string)
+	pool := workerpool.NewPool(workerCount, client)
 
 	urls := []string{
 		"https://ya.ru/",
@@ -24,15 +20,10 @@ func main() {
 		"https://netology.ru",
 	}
 
-	go workerpool.FeedUrls(urls, in)
-	go workerpool.StartWorkers(workerCount, &wg, in, out, client)
+	pool.WriteEnqueue(urls)
+	pool.Wait()
 
-	go func() {
-		wg.Wait()
-		close(out)
-	}()
-
-	for result := range out {
+	for result := range pool.Results() {
 		fmt.Println(result)
 	}
 }
