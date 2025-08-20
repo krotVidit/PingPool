@@ -9,7 +9,7 @@ type Pool struct {
 	wg     sync.WaitGroup
 	client *http.Client
 	in     chan string
-	Result chan Result
+	Result chan Results
 }
 
 func NewPool(workerCount int, client *http.Client) *Pool {
@@ -17,7 +17,7 @@ func NewPool(workerCount int, client *http.Client) *Pool {
 		// wg - не нужен, так как в структуре он уже инициализирован
 		client: client,
 		in:     make(chan string),
-		Result: make(chan Result),
+		Result: make(chan Results),
 	}
 
 	for i := 0; i < workerCount; i++ {

@@ -12,10 +12,10 @@ func (p *Pool) worker() {
 		resp, err := p.client.Get(url)
 		duration := time.Since(start)
 
-		result := Result{
+		result := Results{
 			URL:      url,
 			Duration: duration,
-			Error:    err,
+			Err:    err,
 		}
 
 		if err == nil && resp != nil {

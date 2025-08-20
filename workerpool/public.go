@@ -9,7 +9,7 @@ func (p *Pool) WriteEnqueue(urls []string) {
 	}()
 }
 
-func (p *Pool) ResultsOutChan() <-chan Result {
+func (p *Pool) ResultsOutChan() <-chan Results {
 	return p.Result
 }
 
