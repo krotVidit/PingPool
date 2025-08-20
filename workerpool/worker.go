@@ -8,20 +8,25 @@ func (p *Pool) worker() {
 	defer p.wg.Done()
 
 	for url := range p.in {
-		start := time.Now()
-		resp, err := p.client.Get(url)
-		duration := time.Since(start)
-
-		result := Results{
-			URL:      url,
-			Duration: duration,
-			Err:    err,
-		}
-
-		if err == nil && resp != nil {
-			result.Status = resp.Status
-			resp.Body.Close()
-		}
+		result := p.fetchURL(url)
 		p.Result <- result
 	}
+}
+
+func (p *Pool) fetchURL(url string) Results {
+	start := time.Now()
+	resp, err := p.client.Get(url)
+	duration := time.Since(start)
+
+	result := Results{
+		URL:      url,
+		Duration: duration,
+		Err:      err,
+	}
+
+	if err == nil && resp != nil {
+		result.Status = resp.Status
+		resp.Body.Close()
+	}
+	return result
 }
