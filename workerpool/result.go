@@ -15,8 +15,8 @@ type Results struct {
 	Err      error
 }
 
-func newResults(URL, Status string, Duration time.Duration, Err error) *Results {
-	return &Results{
+func newResults(URL, Status string, Duration time.Duration, Err error) Results {
+	return Results{
 		URL:      URL,
 		Status:   Status,
 		Duration: Duration,
