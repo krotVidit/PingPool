@@ -1,3 +1,6 @@
+// Package workerpool - пакет служащий для реализации паттерна workerpool
+// Results - хранит в себе результаты ответа запроса
+// Report формирует удобный вывод результатов с помощью методов DurationString и StatusString
 package workerpool
 
 import (
