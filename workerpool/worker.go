@@ -11,15 +11,20 @@ func (p *Pool) worker() {
 	}
 }
 
-func (p *Pool) handleURL(url string) *Results {
+func timeTrack[T any](f func() (T, error)) (res T, duration time.Duration, err error) {
 	start := time.Now()
-	resp, err := p.client.Get(url)
-	duration := time.Since(start)
+	res, err = f()
+	return res, time.Since(start), err
+}
 
-	statusCode := ""
-	if err == nil {
-		statusCode = resp.Status
-		resp.Body.Close()
-	}
-	return newResults(url, statusCode, duration, err)
+func (p *Pool) handleURL(url string) *Results {
+	status, duration, err := timeTrack(func() (string, error) {
+		resp, err := p.client.Get(url)
+		if err != nil {
+			return "", err
+		}
+		defer resp.Body.Close()
+		return resp.Status, nil
+	})
+	return newResults(url, status, duration, err)
 }
