@@ -7,17 +7,17 @@ func (p *Pool) worker() {
 	defer p.wg.Done()
 
 	for url := range p.in {
-		p.Result <- *p.fetchURL(url)
+		p.Result <- *p.handleURL(url)
 	}
 }
 
-func (p *Pool) fetchURL(url string) *Results {
+func (p *Pool) handleURL(url string) *Results {
 	start := time.Now()
 	resp, err := p.client.Get(url)
 	duration := time.Since(start)
 
 	statusCode := ""
-	if err == nil && resp != nil {
+	if err == nil {
 		statusCode = resp.Status
 		resp.Body.Close()
 	}
