@@ -15,6 +15,15 @@ type Results struct {
 	Err      error
 }
 
+func newResults(URL, Status string, Duration time.Duration, Err error) *Results {
+	return &Results{
+		URL:      URL,
+		Status:   Status,
+		Duration: Duration,
+		Err:      Err,
+	}
+}
+
 func (r Results) Report() string {
 	if r.Err != nil {
 		return fmt.Sprintf("%-8s %-35s %v", r.StatusString(), r.URL, r.Err)

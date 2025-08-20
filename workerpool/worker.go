@@ -1,32 +1,25 @@
-// Package workerpool будет лежать паттерни workerpool
+// Package workerpool - пакет служащий для реализации паттерна workerpool
 package workerpool
 
 import "time"
 
-// Воркер - основное действие которое будет делатся
 func (p *Pool) worker() {
 	defer p.wg.Done()
 
 	for url := range p.in {
-		result := p.fetchURL(url)
-		p.Result <- result
+		p.Result <- *p.fetchURL(url)
 	}
 }
 
-func (p *Pool) fetchURL(url string) Results {
+func (p *Pool) fetchURL(url string) *Results {
 	start := time.Now()
 	resp, err := p.client.Get(url)
 	duration := time.Since(start)
 
-	result := Results{
-		URL:      url,
-		Duration: duration,
-		Err:      err,
-	}
-
+	statusCode := ""
 	if err == nil && resp != nil {
-		result.Status = resp.Status
+		statusCode = resp.Status
 		resp.Body.Close()
 	}
-	return result
+	return newResults(url, statusCode, duration, err)
 }
