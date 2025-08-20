@@ -24,6 +24,6 @@ func main() {
 	pool.Wait()
 
 	for result := range pool.ResultsOutChan() {
-		fmt.Println(result)
+		fmt.Println(result.Report())
 	}
 }
