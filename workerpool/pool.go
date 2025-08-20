@@ -1,3 +1,5 @@
+// Package workerpool - пакет служащий для реализации паттерна workerpool
+// Создание структуры и конструктора Pool - где уже создается Пул Ворекров
 package workerpool
 
 import (
@@ -14,7 +16,6 @@ type Pool struct {
 
 func NewPool(workerCount int, client *http.Client) *Pool {
 	p := &Pool{
-		// wg - не нужен, так как в структуре он уже инициализирован
 		client: client,
 		in:     make(chan string),
 		Result: make(chan Results),
