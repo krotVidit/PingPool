@@ -9,13 +9,13 @@ func (p *Pool) WriteEnqueue(urls []string) {
 	}()
 }
 
-func (p *Pool) Results() <-chan string {
-	return p.out
+func (p *Pool) ResultsOutChan() <-chan Result {
+	return p.Result
 }
 
 func (p *Pool) Wait() {
 	go func() {
 		p.wg.Wait()
-		close(p.out)
+		close(p.Result)
 	}()
 }

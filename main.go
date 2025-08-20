@@ -23,7 +23,7 @@ func main() {
 	pool.WriteEnqueue(urls)
 	pool.Wait()
 
-	for result := range pool.Results() {
+	for result := range pool.ResultsOutChan() {
 		fmt.Println(result)
 	}
 }

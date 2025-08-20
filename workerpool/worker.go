@@ -1,21 +1,27 @@
 // Package workerpool будет лежать паттерни workerpool
 package workerpool
 
-import (
-	"fmt"
-)
+import "time"
 
 // Воркер - основное действие которое будет делатся
 func (p *Pool) worker() {
 	defer p.wg.Done()
 
 	for url := range p.in {
+		start := time.Now()
 		resp, err := p.client.Get(url)
-		if err != nil {
-			p.out <- fmt.Sprintf("Error: %s  url: %s", err, url)
-			continue
+		duration := time.Since(start)
+
+		result := Result{
+			URL:      url,
+			Duration: duration,
+			Error:    err,
 		}
-		p.out <- fmt.Sprintf("OK %s status: %s", url, resp.Status)
-		resp.Body.Close()
+
+		if err == nil && resp != nil {
+			result.Status = resp.Status
+			resp.Body.Close()
+		}
+		p.Result <- result
 	}
 }
