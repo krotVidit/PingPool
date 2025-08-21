@@ -9,7 +9,7 @@ func (p *Pool) worker() {
 	defer p.wg.Done()
 
 	for url := range p.in {
-		p.Result <- p.handleURL(url)
+		p.out <- p.handleURL(url)
 	}
 }
 
@@ -19,7 +19,7 @@ func timeTrack[T any](f func() (T, error)) (res T, duration time.Duration, err e
 	return res, time.Since(start), err
 }
 
-func (p *Pool) handleURL(url string) Results {
+func (p *Pool) handleURL(url string) Result {
 	status, duration, err := timeTrack(func() (string, error) {
 		resp, err := p.client.Get(url)
 		if err != nil {
@@ -28,5 +28,5 @@ func (p *Pool) handleURL(url string) Results {
 		defer resp.Body.Close()
 		return resp.Status, nil
 	})
-	return newResults(url, status, duration, err)
+	return newResult(url, status, duration, err)
 }

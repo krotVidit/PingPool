@@ -23,7 +23,7 @@ func main() {
 	pool.WriteChanIn(urls)
 	pool.Wait()
 
-	for result := range pool.ResultsOutChan() {
+	for result := range pool.ResOutChan() {
 		fmt.Println(result.Report())
 	}
 }

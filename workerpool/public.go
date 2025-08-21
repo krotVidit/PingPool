@@ -12,13 +12,13 @@ func (p *Pool) WriteChanIn(urls []string) {
 	}()
 }
 
-func (p *Pool) ResultsOutChan() <-chan Results {
-	return p.Result
+func (p *Pool) ResOutChan() <-chan Result {
+	return p.out
 }
 
 func (p *Pool) Wait() {
 	go func() {
 		p.wg.Wait()
-		close(p.Result)
+		close(p.out)
 	}()
 }
