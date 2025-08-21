@@ -3,7 +3,7 @@
 // Запись в задач в канал, выдача канала с результатом, ожидание выполнение горутин
 package workerpool
 
-func (p *Pool) WriteChanIn(urls []string) { // XXX: Можно наверное в Pool перенести ?
+func (p *Pool) WriteChanIn(urls []string) {
 	go func() {
 		for _, url := range urls {
 			p.in <- url
