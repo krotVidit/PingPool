@@ -17,11 +17,11 @@ type Pool struct {
 func NewPool(workerCount int, client *http.Client) *Pool {
 	p := &Pool{
 		client: client,
-		in:     make(chan string),
+		in:     make(chan string), // XXX: Сделать входной канал тоже структурой
 		Result: make(chan Results),
 	}
 
-	for i := 0; i < workerCount; i++ {
+	for i := 0; i < workerCount; i++ { // TODO: Здесь происходит инициализация нескольких воркеров
 		p.wg.Add(1)
 		go p.worker()
 	}
