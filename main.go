@@ -8,6 +8,7 @@ import (
 	"ping/app/workerpool"
 )
 
+// TODO: В данной вертке будет реаилзована возможность вызывать  в цикле пинг
 func main() {
 	const workerCount = 3
 	client := &http.Client{Timeout: time.Second * 10}
