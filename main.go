@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"ping/app/workerpool"
@@ -15,15 +13,9 @@ func main() {
 	client := &http.Client{Timeout: time.Second * 10}
 	pool := workerpool.NewPool(workerCount, client)
 
-	data, err := os.ReadFile("urls.json")
+	urls, err := workerpool.LoadUrls("urls.json")
 	if err != nil {
-		fmt.Println("Ошибка - не найден файл urls.json")
-		return
-	}
-
-	var urls []string
-	if err := json.Unmarshal(data, &urls); err != nil {
-		fmt.Println("Ошибка - неверный формат urls.json")
+		fmt.Println("Ошибка", err)
 		return
 	}
 

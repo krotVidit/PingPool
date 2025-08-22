@@ -3,6 +3,12 @@
 // Запись в задач в канал, выдача канала с результатом, ожидание выполнение горутин
 package workerpool
 
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+)
+
 func (p *Pool) WriteChanIn(urls []string) {
 	go func() {
 		for _, url := range urls {
@@ -21,4 +27,17 @@ func (p *Pool) Wait() {
 		p.wg.Wait()
 		close(p.out)
 	}()
+}
+
+func LoadUrls(filename string) ([]string, error) {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("не найден файл %s: %w", filename, err)
+	}
+
+	var urls []string
+	if err := json.Unmarshal(data, &urls); err != nil {
+		return nil, fmt.Errorf("неверный формат файла %s: %w", filename, err)
+	}
+	return urls, nil
 }
