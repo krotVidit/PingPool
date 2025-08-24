@@ -7,14 +7,22 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
-func (p *Pool) WriteChanIn(urls []string) {
+func (p *Pool) WriteChanIn(urls []string, interval time.Duration) {
 	go func() {
-		for _, url := range urls {
-			p.in <- url
+		for {
+			for _, url := range urls {
+				p.in <- url
+			}
+			time.Sleep(interval)
+			if p.stopped {
+				return
+			}
 		}
-		close(p.in)
 	}()
 }
 
@@ -40,4 +48,26 @@ func LoadUrls(filename string) ([]string, error) {
 		return nil, fmt.Errorf("неверный формат файла %s: %w", filename, err)
 	}
 	return urls, nil
+}
+
+func GracefulShutdown(pool *Pool) {
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+	fmt.Println("[INFO] Signal stopped...stop pool")
+	pool.Stop()
+	fmt.Println("[EXIT] Pool stopped corect")
+}
+
+func (p *Pool) Stop() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if p.stopped {
+		return
+	}
+
+	p.stopped = true
+	close(p.in)
+	p.wg.Wait()
 }
