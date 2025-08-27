@@ -36,12 +36,12 @@ func (p *Pool) Wait() {
 func LoadUrls(filename string) ([]string, error) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
-		return nil, fmt.Errorf("не найден файл %s: %w", filename, err)
+		return nil, fmt.Errorf("file not found %s: %w", filename, err)
 	}
 
 	var urls []string
 	if err := json.Unmarshal(data, &urls); err != nil {
-		return nil, fmt.Errorf("неверный формат файла %s: %w", filename, err)
+		return nil, fmt.Errorf("invalid file format %s: %w", filename, err)
 	}
 	return urls, nil
 }
