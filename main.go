@@ -8,11 +8,14 @@ import (
 	"ping/app/workerpool"
 )
 
-// TODO: В данной вертке будет реаилзована возможность вызывать  в цикле пинг
 func main() {
-	const workerCount = 3
-	const interval = time.Second * 10
-	client := &http.Client{Timeout: time.Second * 10}
+	const (
+		workerCount   = 3
+		pingInterval  = time.Second * 10
+		clientTimeout = time.Second * 10
+	)
+
+	client := &http.Client{Timeout: clientTimeout}
 	pool := workerpool.NewPool(workerCount, client)
 
 	urls, err := workerpool.LoadUrls("urls.json")
@@ -21,7 +24,7 @@ func main() {
 		return
 	}
 
-	pool.WriteChanIn(urls, interval)
+	go pool.WriteChanIn(urls, pingInterval)
 	pool.Wait()
 
 	for result := range pool.ResOutChan() {

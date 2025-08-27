@@ -13,17 +13,15 @@ import (
 )
 
 func (p *Pool) WriteChanIn(urls []string, interval time.Duration) {
-	go func() {
-		for {
-			for _, url := range urls {
-				p.in <- url
-			}
-			time.Sleep(interval)
-			if p.stopped {
-				return
-			}
+	for {
+		for _, url := range urls {
+			p.in <- url
 		}
-	}()
+		time.Sleep(interval)
+		if p.stopped {
+			return
+		}
+	}
 }
 
 func (p *Pool) ResOutChan() <-chan Result {
