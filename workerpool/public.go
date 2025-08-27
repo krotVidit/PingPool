@@ -29,10 +29,8 @@ func (p *Pool) ResOutChan() <-chan Result {
 }
 
 func (p *Pool) Wait() {
-	go func() {
-		p.wg.Wait()
-		close(p.out)
-	}()
+	p.wg.Wait()
+	close(p.out)
 }
 
 func LoadUrls(filename string) ([]string, error) {

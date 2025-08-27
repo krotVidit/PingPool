@@ -25,11 +25,11 @@ func main() {
 	}
 
 	go pool.WriteChanIn(urls, pingInterval)
-	pool.Wait()
+	go pool.Wait()
+
+	go workerpool.GracefulShutdown(pool)
 
 	for result := range pool.ResOutChan() {
 		fmt.Println(result.Report())
 	}
-
-	go workerpool.GracefulShutdown(pool)
 }
