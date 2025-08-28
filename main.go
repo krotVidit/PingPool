@@ -8,13 +8,13 @@ import (
 	"ping/app/workerpool"
 )
 
-func main() {
-	const (
-		workerCount   = 3
-		pingInterval  = time.Second * 10
-		clientTimeout = time.Second * 10
-	)
+const (
+	workerCount   = 3
+	pingInterval  = time.Second * 10
+	clientTimeout = time.Second * 10
+)
 
+func main() {
 	client := &http.Client{Timeout: clientTimeout}
 	pool := workerpool.NewPool(workerCount, client)
 
